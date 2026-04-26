@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model SearchHistory {
+  id                  String   @id @default(cuid())
+  query               String
+  introductoryMessage String
+  mainMatchTitle      String
+  mainMatchType       String
+  mainMatchDescription String
+  mainMatchReason     String
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  preferences  String?  @default("{}")
+  createdAt    DateTime @default(now())
+  favorites    Favorite[]
+  history      SearchHistory[]
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  title     String
+  type      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
